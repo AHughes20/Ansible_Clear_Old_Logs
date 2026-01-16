@@ -1,0 +1,22 @@
+---
+- name: starting up
+  hosts: rhels
+  gather_facts: no
+  tasks:
+    - name: finding old logs
+      ansible.builtin.find:
+        age: 4d
+        file_type: "any"
+        paths: /home/falkor/bigdir
+      register: noname
+
+    - name: saving files to /home/falkor
+      ansible.builtin.lineinfile:
+        path: /home/falkor/test_review.txt
+        create: true
+        line: "{{ item.path }}"
+      loop: "{{ noname.files }}"
+
+    - name: show files
+      debug:
+        var: noname
